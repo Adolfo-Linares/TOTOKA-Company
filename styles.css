@@ -77,7 +77,9 @@ h1{font-size:clamp(3.1rem,4.8vw,5.35rem);line-height:1.05;color:var(--deep);font
 html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body{overflow-x:auto}
 .site-header,.main-nav,.btn,.login-btn,.product-card,.mini-product,.message-card,.login-panel{min-width:0}
-h1,h2,h3,p,a,b,span,label,input,textarea,button{overflow-wrap:anywhere}
+h1,h2,h3,p,a,b,span,label,input,textarea,button{overflow-wrap:normal;word-break:normal}
+p,a,b,span,label,input,textarea,button{overflow-wrap:break-word}
+h1,h2,h3{hyphens:none}
 
 @media(max-width:1250px){
   .site-header{gap:18px}
@@ -116,6 +118,7 @@ h1,h2,h3,p,a,b,span,label,input,textarea,button{overflow-wrap:anywhere}
   .hero{grid-template-columns:1fr;padding:34px 18px;border-radius:0 0 24px 24px}
   .home-hero{padding-bottom:74px}
   .hero p{max-width:none}
+  .hero h1{font-size:clamp(2.55rem,12vw,4.6rem);line-height:1.06}
   .products-scene,.products-scene img,.photo-card.wide,.sustain-clean{min-height:300px;height:300px}
   .actions,.row-title{display:grid;grid-template-columns:1fr}
   .btn,.login-btn{width:100%;min-width:0}
@@ -136,7 +139,8 @@ h1,h2,h3,p,a,b,span,label,input,textarea,button{overflow-wrap:anywhere}
 
 @media(max-width:480px){
   body{font-size:15px}
-  h1{font-size:2.25rem;letter-spacing:0}
+  h1{font-size:2.2rem;letter-spacing:0}
+  .hero h1{font-size:clamp(2.15rem,11.2vw,3.15rem)}
   h2{font-size:1.95rem;letter-spacing:0}
   .brand{font-size:1.15rem;gap:10px}
   .brand img{width:58px;height:58px}
