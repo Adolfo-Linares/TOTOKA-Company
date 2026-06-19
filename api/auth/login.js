@@ -95,19 +95,9 @@ module.exports = async function handler(req, res){
     );
 
     if(existing.rowCount === 0){
-      const username = getDisplayName(email);
-      const { salt, hash } = await hashPassword(password);
-      const created = await getPool().query(
-        `INSERT INTO users (email, username, password_hash, password_salt, last_login_at)
-         VALUES ($1, $2, $3, $4, NOW())
-         RETURNING email, username`,
-        [email, username, hash, salt]
-      );
-
-      return res.status(201).json({
-        ok:true,
-        created:true,
-        user: created.rows[0]
+      return res.status(401).json({
+        ok:false,
+        message:'Este usuario no existe. Solicita acceso con TOTOKA.'
       });
     }
 

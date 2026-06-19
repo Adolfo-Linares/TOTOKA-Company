@@ -58,7 +58,7 @@ function setupLoginForm(){
       localStorage.setItem('totokaUserName', username);
       localStorage.setItem('totokaUserEmail', result.user?.email || email);
       updateLoginButtons();
-      setStatus(result.created ? 'Cuenta guardada correctamente.' : 'Acceso correcto.', 'success');
+      setStatus('Acceso correcto.', 'success');
       window.location.href = 'index.html';
     }catch(error){
       setStatus(error.message || 'No se pudo iniciar sesion.', 'error');
