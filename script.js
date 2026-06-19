@@ -22,16 +22,49 @@ function updateLoginButtons(){
 function setupLoginForm(){
   const form = document.getElementById('loginForm');
   if(!form) return;
+  const status = form.querySelector('.login-status');
+  const submitButton = form.querySelector('button[type="submit"]');
 
-  form.addEventListener('submit', (event)=>{
+  function setStatus(message, type){
+    if(!status) return;
+    status.textContent = message || '';
+    status.dataset.type = type || '';
+  }
+
+  form.addEventListener('submit', async (event)=>{
     event.preventDefault();
     if(!form.reportValidity()) return;
 
     const data = new FormData(form);
-    const username = getDisplayName(data.get('email'));
-    localStorage.setItem('totokaUserName', username);
-    updateLoginButtons();
-    window.location.href = 'index.html';
+    const email = data.get('email');
+    const password = data.get('password');
+
+    setStatus('Validando acceso...', 'loading');
+    if(submitButton) submitButton.disabled = true;
+
+    try{
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+      const result = await response.json();
+
+      if(!response.ok || !result.ok){
+        throw new Error(result.message || 'No se pudo iniciar sesion.');
+      }
+
+      const username = result.user?.username || getDisplayName(email);
+      localStorage.setItem('totokaUserName', username);
+      localStorage.setItem('totokaUserEmail', result.user?.email || email);
+      updateLoginButtons();
+      setStatus(result.created ? 'Cuenta guardada correctamente.' : 'Acceso correcto.', 'success');
+      window.location.href = 'index.html';
+    }catch(error){
+      setStatus(error.message || 'No se pudo iniciar sesion.', 'error');
+    }finally{
+      if(submitButton) submitButton.disabled = false;
+    }
   });
 }
 
