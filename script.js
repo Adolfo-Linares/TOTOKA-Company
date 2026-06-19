@@ -2,76 +2,9 @@ function toggleMenu(){
   document.body.classList.toggle('menu-open');
 }
 
-function getDisplayName(email){
-  return String(email || '').split('@')[0].trim() || 'Usuario';
-}
-
-function updateLoginButtons(){
-  const username = localStorage.getItem('totokaUserName');
-  if(!username) return;
-
-  document.querySelectorAll('.login-btn').forEach((button)=>{
-    const icon = button.querySelector('svg');
-    button.textContent = '';
-    if(icon) button.appendChild(icon);
-    button.append(document.createTextNode(username));
-    button.setAttribute('title', `Sesion iniciada como ${username}`);
-  });
-}
-
-function setupLoginForm(){
-  const form = document.getElementById('loginForm');
-  if(!form) return;
-  const status = form.querySelector('.login-status');
-  const submitButton = form.querySelector('button[type="submit"]');
-
-  function setStatus(message, type){
-    if(!status) return;
-    status.textContent = message || '';
-    status.dataset.type = type || '';
-  }
-
-  form.addEventListener('submit', async (event)=>{
-    event.preventDefault();
-    if(!form.reportValidity()) return;
-
-    const data = new FormData(form);
-    const email = data.get('email');
-    const password = data.get('password');
-
-    setStatus('Validando acceso...', 'loading');
-    if(submitButton) submitButton.disabled = true;
-
-    try{
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
-      const result = await response.json();
-
-      if(!response.ok || !result.ok){
-        throw new Error(result.message || 'No se pudo iniciar sesion.');
-      }
-
-      const username = result.user?.username || getDisplayName(email);
-      localStorage.setItem('totokaUserName', username);
-      localStorage.setItem('totokaUserEmail', result.user?.email || email);
-      updateLoginButtons();
-      setStatus('Acceso correcto.', 'success');
-      window.location.href = 'index.html';
-    }catch(error){
-      setStatus(error.message || 'No se pudo iniciar sesion.', 'error');
-    }finally{
-      if(submitButton) submitButton.disabled = false;
-    }
-  });
-}
-
 document.addEventListener('DOMContentLoaded', ()=>{
-  updateLoginButtons();
-  setupLoginForm();
   setupProductLightbox();
+  setupGmailLinks();
 });
 
 function setupProductLightbox(){
@@ -127,6 +60,25 @@ function setupProductLightbox(){
 
 let sendingContact = false;
 
+function openGmailCompose(subject, body = ''){
+  const mailtoUrl = `mailto:totokainnovat@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  const gmailUrl = `https://mail.google.com/mail/?extsrc=mailto&url=${encodeURIComponent(mailtoUrl)}`;
+  const gmailWindow = window.open(gmailUrl, 'totokaGmailCompose');
+
+  if(!gmailWindow){
+    window.location.href = gmailUrl;
+  }
+}
+
+function setupGmailLinks(){
+  document.querySelectorAll('a[href^="mailto:totokainnovat@gmail.com"]').forEach((link)=>{
+    link.addEventListener('click', (event)=>{
+      event.preventDefault();
+      openGmailCompose('Informacion TOTOKA', 'Hola, quiero informacion sobre TOTOKA.');
+    });
+  });
+}
+
 function sendContactEmail(){
   const form = document.getElementById('contactForm');
   if(!form) return;
@@ -147,6 +99,5 @@ function sendContactEmail(){
     `Correo: ${email}\n` +
     `Empresa: ${company}\n\n` +
     `Mensaje:\n${message}`;
-  const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=totokainnovat@gmail.com&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  window.open(gmailUrl, 'totokaGmailCompose');
+  openGmailCompose(subject, body);
 }
